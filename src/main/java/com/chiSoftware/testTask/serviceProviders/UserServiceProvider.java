@@ -1,5 +1,7 @@
 package com.chiSoftware.testTask.serviceProviders;
 
+import com.chiSoftware.testTask.entities.contact.Contact;
+import com.chiSoftware.testTask.entities.contact.ContactRepository;
 import com.chiSoftware.testTask.entities.user.User;
 import com.chiSoftware.testTask.entities.user.UserRepository;
 import com.chiSoftware.testTask.security.AuthRequest;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,6 +31,8 @@ import java.util.Optional;
 public class UserServiceProvider implements UserService {
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
+    private final ContactRepository contactRepository;
     @Autowired
     private final PasswordEncoder passwordEncoder;
     @Autowired
@@ -82,6 +87,8 @@ public class UserServiceProvider implements UserService {
         if(optionalUser.isEmpty()){
             return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
         }
+        List<Contact> contacts = contactRepository.findContactsByOwner(principal.getName());
+        contactRepository.deleteAll(contacts);
         userRepository.delete(optionalUser.get());
         return new ResponseEntity<>("User was successfully created", HttpStatus.NO_CONTENT);
     }

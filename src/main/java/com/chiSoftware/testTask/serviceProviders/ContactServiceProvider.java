@@ -15,9 +15,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.chiSoftware.testTask.Constants.*;
@@ -32,6 +30,14 @@ public class ContactServiceProvider implements ContactService {
 
     private final Pattern phoneNumberPattern = Pattern.compile(PHONE_NUMBER_REGEX, Pattern.CASE_INSENSITIVE);
     private final Pattern emailPattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
+
+    private String[] getUnique(String[] original, String[] updated){
+        Set<String> originalSet = new HashSet<>(Arrays.asList(original));
+        Set<String> updatedSet = new HashSet<>(Arrays.asList(updated));
+
+        updatedSet.removeAll(originalSet);
+        return updatedSet.toArray(new String[0]);
+    }
 
     private boolean emailsAreInvalid(String[] emails, String login) {
         List<Contact> contacts = contactRepository.findContactsByEmailIn(emails, login);
@@ -117,11 +123,57 @@ public class ContactServiceProvider implements ContactService {
 
     @Override
     public ResponseEntity<String> deleteContact(String name, Principal principal) {
-        return null;
+        if(name==null || name.strip().equals("")){
+            return new ResponseEntity<>("Name cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        Optional<Contact> contact = contactRepository.findContactByName(name, principal.getName());
+        if(contact.isEmpty()){
+            return new ResponseEntity<>("Contact with such name does not exist", HttpStatus.BAD_REQUEST);
+        }
+        contactRepository.delete(contact.get());
+        return new ResponseEntity<>("Contact deleted successfully", HttpStatus.NO_CONTENT);
     }
 
     @Override
     public ResponseEntity<String> editContact(String name, Contact contact, Principal principal) {
-        return null;
+        if(name == null || name.strip().equals("")){
+            return new ResponseEntity<>("Name variable cannot be empty",
+                    HttpStatus.BAD_REQUEST);
+        }
+        else if(contact.getId()!=null){
+            return new ResponseEntity<>("Contact id cannot be changed", HttpStatus.BAD_REQUEST);
+        }
+        else if(contact.getName() == null || contact.getName().strip().equals("")){
+            return new ResponseEntity<>("Contact name cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        else if(contactRepository.findContactByName(contact.getName(), principal.getName()).isPresent()
+            && !contact.getName().equals(name)){
+            return new ResponseEntity<>("Contact with such name already exists",
+                    HttpStatus.BAD_REQUEST);
+        }
+        Optional<Contact> oldContact = contactRepository.findContactByName(name, principal.getName());
+        if(oldContact.isEmpty()){
+            return new ResponseEntity<>("Contact with such name does not exist",
+                    HttpStatus.BAD_REQUEST);
+        }
+        Contact oldContactData = oldContact.get();
+
+        if(contact.getEmails()==null || emailsAreInvalid(
+                getUnique(oldContactData.getEmails(), contact.getEmails()), principal.getName())){
+            return new ResponseEntity<>("Invalid email entered or contact with such email already exists",
+                    HttpStatus.BAD_REQUEST);
+        }
+        else if(contact.getPhones()==null || phoneNumbersAreInvalid(
+                getUnique(oldContactData.getPhones(), contact.getPhones()), principal.getName())){
+            return new ResponseEntity<>("Invalid phoneNumber entered or contact with such phoneNumber already exists",
+                    HttpStatus.BAD_REQUEST);
+        }
+        oldContactData.setEmails(contact.getEmails());
+        oldContactData.setPhones(contact.getPhones());
+        oldContactData.setName(contact.getName());
+
+        contactRepository.save(oldContactData);
+
+        return new ResponseEntity<>("Contact updated successfully", HttpStatus.OK);
     }
 }
