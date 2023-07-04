@@ -22,12 +22,12 @@ public class UserController {
         return userService.authenticate(request);
     }
 
-    @PostMapping
+    @PostMapping(path = "/register")
     public ResponseEntity<String> createUser(@RequestBody User user) {
         return userService.createUser(user);
     }
 
-    @DeleteMapping
+    @DeleteMapping(path = "/delete")
     public ResponseEntity<String> deleteUser(Principal principal) {
         return userService.deleteUser(principal);
     }
