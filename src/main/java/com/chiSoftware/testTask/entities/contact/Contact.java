@@ -1,5 +1,7 @@
 package com.chiSoftware.testTask.entities.contact;
 
+import com.chiSoftware.testTask.entities.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +17,11 @@ import lombok.NoArgsConstructor;
     private Long id;
     private String name;
     @ElementCollection
-    private String[] phoneNumbers;
+    private String[] phones;
     @ElementCollection
     private String[] emails;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
