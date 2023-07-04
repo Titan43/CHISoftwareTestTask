@@ -78,7 +78,7 @@ public class ContactServiceProvider implements ContactService {
         if(contact.getName() == null || contact.getName().strip().equals("")){
             return new ResponseEntity<>("Contact name cannot be empty", HttpStatus.BAD_REQUEST);
         }
-        else if(contactRepository.findContactByName(contact.getName()).isPresent()){
+        else if(contactRepository.findContactByName(contact.getName(), principal.getName()).isPresent()){
             return new ResponseEntity<>("Contact with such name already exists",
                     HttpStatus.BAD_REQUEST);
         }
@@ -108,7 +108,7 @@ public class ContactServiceProvider implements ContactService {
 
     @Override
     public ResponseEntity<?> getContacts(Principal principal) {
-        List<Contact> contacts = contactRepository.findAll();
+        List<Contact> contacts = contactRepository.findContactsByOwner(principal.getName());
         if(contacts.size()==0){
             return new ResponseEntity<>("No contacts to show", HttpStatus.NO_CONTENT);
         }

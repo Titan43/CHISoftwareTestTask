@@ -11,5 +11,8 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     List<Contact> findContactsByEmailIn(String[] emails);
     @Query("SELECT c FROM Contact c JOIN c.phones e WHERE e IN :phones")
     List<Contact> findContactsByPhoneIn(String[] phones);
-    Optional<Contact> findContactByName(String name);
+    @Query("SELECT c FROM Contact c WHERE c.name = ?1 AND c.user.login = ?2")
+    Optional<Contact> findContactByName(String name, String login);
+    @Query("SELECT c FROM Contact c WHERE c.user.login = ?1")
+    List<Contact> findContactsByOwner(String login);
 }
