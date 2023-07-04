@@ -32,8 +32,9 @@ public class ContactController {
         return contactService.deleteContact(name, principal);
     }
 
-    @PutMapping
-    public ResponseEntity<String> editContact(@RequestBody Contact contact, Principal principal) {
-        return contactService.editContact(contact, principal);
+    @PutMapping(path = "/{name}")
+    public ResponseEntity<String> editContact(@PathVariable String name, @RequestBody Contact contact,
+                                              Principal principal) {
+        return contactService.editContact(name, contact, principal);
     }
 }

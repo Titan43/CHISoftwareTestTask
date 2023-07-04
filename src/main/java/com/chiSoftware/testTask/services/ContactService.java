@@ -9,5 +9,5 @@ public interface ContactService {
     ResponseEntity<String> createContact(Contact contact, Principal principal);
     ResponseEntity<?> getContacts(Principal principal);
     ResponseEntity<String> deleteContact(String name, Principal principal);
-    ResponseEntity<String> editContact(Contact contact, Principal principal);
+    ResponseEntity<String> editContact(String name, Contact contact, Principal principal);
 }

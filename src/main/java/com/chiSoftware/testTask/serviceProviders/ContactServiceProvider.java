@@ -33,8 +33,8 @@ public class ContactServiceProvider implements ContactService {
     private final Pattern phoneNumberPattern = Pattern.compile(PHONE_NUMBER_REGEX, Pattern.CASE_INSENSITIVE);
     private final Pattern emailPattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
 
-    private boolean emailsAreInvalid(String[] emails) {
-        List<Contact> contacts = contactRepository.findContactsByEmailIn(emails);
+    private boolean emailsAreInvalid(String[] emails, String login) {
+        List<Contact> contacts = contactRepository.findContactsByEmailIn(emails, login);
         for (String email : emails) {
             if (email == null || !emailPattern.matcher(email).matches() || contactExistsWithEmail(contacts, email)) {
                 return true;
@@ -52,8 +52,8 @@ public class ContactServiceProvider implements ContactService {
         return false;
     }
 
-    private boolean phoneNumbersAreInvalid(String[] phoneNumbers) {
-        List<Contact> contacts = contactRepository.findContactsByPhoneIn(phoneNumbers);
+    private boolean phoneNumbersAreInvalid(String[] phoneNumbers, String login) {
+        List<Contact> contacts = contactRepository.findContactsByPhoneIn(phoneNumbers, login);
         for (String phoneNumber : phoneNumbers) {
             if (phoneNumber == null || !phoneNumberPattern.matcher(phoneNumber).matches()
                     || contactExistsWithPhoneNumber(contacts, phoneNumber)) {
@@ -82,11 +82,11 @@ public class ContactServiceProvider implements ContactService {
             return new ResponseEntity<>("Contact with such name already exists",
                     HttpStatus.BAD_REQUEST);
         }
-        else if(contact.getEmails()==null || emailsAreInvalid(contact.getEmails())){
+        else if(contact.getEmails()==null || emailsAreInvalid(contact.getEmails(), principal.getName())){
             return new ResponseEntity<>("Invalid email entered or contact with such email already exists",
                     HttpStatus.BAD_REQUEST);
         }
-        else if(contact.getPhones()==null || phoneNumbersAreInvalid(contact.getPhones())){
+        else if(contact.getPhones()==null || phoneNumbersAreInvalid(contact.getPhones(), principal.getName())){
             return new ResponseEntity<>("Invalid phoneNumber entered or contact with such phoneNumber already exists",
                     HttpStatus.BAD_REQUEST);
         }
@@ -121,7 +121,7 @@ public class ContactServiceProvider implements ContactService {
     }
 
     @Override
-    public ResponseEntity<String> editContact(Contact contact, Principal principal) {
+    public ResponseEntity<String> editContact(String name, Contact contact, Principal principal) {
         return null;
     }
 }
