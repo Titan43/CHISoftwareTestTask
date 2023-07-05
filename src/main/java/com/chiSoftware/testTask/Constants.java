@@ -6,5 +6,5 @@ public interface Constants {
     String REGISTER_PATH = "/register";
     String EMAIL_REGEX = "\\w+@\\w+.\\w+$";
     String PHONE_NUMBER_REGEX = "\\+38\\d{10}$";
-    String LINK = "localhost:8080";
+    String LINK = "http://localhost:8080";
 }

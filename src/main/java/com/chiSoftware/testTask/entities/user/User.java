@@ -23,4 +23,9 @@ import java.util.Set;
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Contact> contacts = new HashSet<>();
+
+    public User(String login, String password) {
+        this.login = login;
+        this.password = password;
+    }
 }

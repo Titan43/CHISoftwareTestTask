@@ -90,6 +90,6 @@ public class UserServiceProvider implements UserService {
         List<Contact> contacts = contactRepository.findContactsByOwner(principal.getName());
         contactRepository.deleteAll(contacts);
         userRepository.delete(optionalUser.get());
-        return new ResponseEntity<>("User was successfully created", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("User was successfully deleted", HttpStatus.NO_CONTENT);
     }
 }
