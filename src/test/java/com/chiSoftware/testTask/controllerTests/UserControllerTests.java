@@ -1,18 +1,14 @@
 package com.chiSoftware.testTask.controllerTests;
 import com.chiSoftware.testTask.entities.user.User;
-import com.chiSoftware.testTask.entities.user.UserDetails;
 import com.chiSoftware.testTask.security.AuthRequest;
 import com.chiSoftware.testTask.security.JwtUtil;
 import com.chiSoftware.testTask.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -21,7 +17,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.net.URI;
-import java.security.Principal;
 
 import static com.chiSoftware.testTask.Constants.*;
 import static org.mockito.Mockito.when;
@@ -29,9 +24,6 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTests {
-
-	@MockBean
-	private Principal principal;
 
 	@MockBean
 	private UserService userService;

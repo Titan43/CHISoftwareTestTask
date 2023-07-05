@@ -28,4 +28,5 @@ import java.util.Set;
         this.login = login;
         this.password = password;
     }
+
 }

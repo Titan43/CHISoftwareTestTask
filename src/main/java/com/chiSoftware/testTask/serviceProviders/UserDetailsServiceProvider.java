@@ -15,7 +15,8 @@ public class UserDetailsServiceProvider implements org.springframework.security.
     @Autowired
     private final UserRepository userRepository;
     @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
         Optional<User> user = userRepository.findUserByLogin(username);
 
         if(user.isEmpty())

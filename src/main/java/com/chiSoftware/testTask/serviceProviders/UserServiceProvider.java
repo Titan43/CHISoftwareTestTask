@@ -49,14 +49,14 @@ public class UserServiceProvider implements UserService {
             user = userDetailsService.loadUserByUsername(request.getLogin());
         }
         catch (UsernameNotFoundException e){
-            return new ResponseEntity<>("Username does not exist", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Wrong credentials", HttpStatus.UNAUTHORIZED);
         }
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword()));
         }
         catch (BadCredentialsException e){
-            return new ResponseEntity<>("Wrong password", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Wrong credentials", HttpStatus.UNAUTHORIZED);
         }
 
         Map<String, String> token = new HashMap<>();
