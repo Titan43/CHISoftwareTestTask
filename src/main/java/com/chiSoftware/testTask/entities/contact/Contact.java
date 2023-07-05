@@ -24,4 +24,11 @@ import lombok.NoArgsConstructor;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Contact(String name, String[] phones, String[] emails, User user) {
+        this.name = name;
+        this.phones = phones;
+        this.emails = emails;
+        this.user = user;
+    }
 }
