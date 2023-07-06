@@ -145,7 +145,7 @@ public class ContactServiceProvider implements ContactService {
         }
         Optional<Contact> contact = contactRepository.findContactByName(name, principal.getName());
         if(contact.isEmpty()){
-            return new ResponseEntity<>("Contact with such name does not exist", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Contact with such name does not exist", HttpStatus.NOT_FOUND);
         }
         contactRepository.delete(contact.get());
         return new ResponseEntity<>("Contact deleted successfully", HttpStatus.NO_CONTENT);
@@ -172,7 +172,7 @@ public class ContactServiceProvider implements ContactService {
         Optional<Contact> oldContact = contactRepository.findContactByName(name, principal.getName());
         if(oldContact.isEmpty()){
             return new ResponseEntity<>("Contact with such name does not exist",
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
         Contact oldContactData = oldContact.get();
         if(contact.getEmails()==null ||

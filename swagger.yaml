@@ -1,0 +1,198 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Contact book API
+tags:
+  - name: User
+    description: User profile management
+  - name: Contact
+    description: Operations with user contacts
+
+paths:
+  /auth:
+    post:
+      tags:
+      - User
+      summary: Authenticate a user and generate an access token.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: authRequest
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/AuthRequest"
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+  /register:
+    post:
+      tags:
+      - User
+      summary: Register a new user.
+      consumes:
+        - application/json
+      produces:
+        - text/plain
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+
+  /delete:
+    delete:
+      tags:
+      - User
+      summary: Delete a user by token.
+      security:
+        - jwt: []
+      produces:
+        - text/plain
+      responses:
+        204:
+          description: No Content
+        404:
+          description: Not Found
+
+  /contacts:
+    post:
+      tags:
+      - Contact
+      summary: Create a new contact for a user.
+      security:
+      - jwt: []
+      consumes:
+        - multipart/form-data
+      produces:
+        - text/plain
+      parameters:
+        - name: image
+          in: formData
+          type: file
+        - name: contact
+          in: formData
+          type: string
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad Request
+
+    get:
+      tags:
+      - Contact
+      summary: Get all contacts for a user.
+      security:
+      - jwt: []
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        204:
+          description: No Content
+
+  /contacts/{contactName}:
+    delete:
+      tags:
+      - Contact
+      summary: Delete a contact by its name.
+      security:
+        - jwt: []
+      produces:
+        - application/json
+      parameters:
+        - name: contactName
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bad Request
+        404:
+          description: Not Found
+    put:
+      tags:
+      - Contact
+      summary: Update a contact by its name.
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      security:
+        - jwt: []
+      parameters:
+        - name: contactName
+          in: path
+          required: true
+          type: string
+        - name: image
+          in: formData
+          type: file
+        - name: contact
+          in: formData
+          type: string
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        404:
+          description: Not Found
+
+definitions:
+  AuthRequest:
+    type: object
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+
+  User:
+    type: object
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+
+  Contact:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phones:
+        type: array
+        items:
+          type: string
+      emails:
+        type: array
+        items:
+          type: string
+      image:
+        type: string
+      user:
+        $ref: "#/definitions/User"
+
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: Authorization
+    in: header

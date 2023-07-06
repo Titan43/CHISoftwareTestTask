@@ -141,7 +141,7 @@ public class ContactServiceTests {
         assertEquals(expected, actual);
 
         expected = new ResponseEntity<>("Contact with such name does not exist",
-                HttpStatus.BAD_REQUEST);
+                HttpStatus.NOT_FOUND);
         actual = contactService.deleteContact("test", principal);
         assertEquals(expected, actual);
     }
