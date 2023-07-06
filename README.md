@@ -67,5 +67,6 @@ docker run -v <path to folder with application.properties>:/app/config -p 8080:8
 - name
 - phones(1:n)
 - emails(1:n)
+- image
 - user(n:1)
   
