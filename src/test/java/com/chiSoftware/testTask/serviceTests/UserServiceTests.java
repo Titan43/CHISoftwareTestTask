@@ -43,9 +43,6 @@ class UserServiceTests {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private MockMvc mockMvc;
-
 	@Test
 	void testAuthenticateFail() {
 		AuthRequest authRequest = new AuthRequest("test", "test");

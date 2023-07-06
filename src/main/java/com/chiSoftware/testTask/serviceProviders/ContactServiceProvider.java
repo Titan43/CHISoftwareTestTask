@@ -28,13 +28,15 @@ public class ContactServiceProvider implements ContactService {
     @Autowired
     private final UserRepository userRepository;
 
-    private final Pattern phoneNumberPattern = Pattern.compile(PHONE_NUMBER_REGEX, Pattern.CASE_INSENSITIVE);
+    private final Pattern phoneNumberPattern = Pattern.compile(PHONE_NUMBER_REGEX);
     private final Pattern emailPattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
 
     private String[] getUnique(String[] original, String[] updated){
+        if(original == null){
+            return updated;
+        }
         Set<String> originalSet = new HashSet<>(Arrays.asList(original));
         Set<String> updatedSet = new HashSet<>(Arrays.asList(updated));
-
         updatedSet.removeAll(originalSet);
         return updatedSet.toArray(new String[0]);
     }
@@ -103,7 +105,7 @@ public class ContactServiceProvider implements ContactService {
         contact.setUser(optionalUser.get());
         contactRepository.save(contact);
         URI location = ServletUriComponentsBuilder
-                .fromPath(LINK+"/contact/"+contact.getName())
+                .fromPath(LINK+"/contacts/"+contact.getName())
                 .build()
                 .toUri();
 
@@ -157,15 +159,16 @@ public class ContactServiceProvider implements ContactService {
                     HttpStatus.BAD_REQUEST);
         }
         Contact oldContactData = oldContact.get();
-
-        if(contact.getEmails()==null || emailsAreInvalid(
-                getUnique(oldContactData.getEmails(), contact.getEmails()), principal.getName())){
-            return new ResponseEntity<>("Invalid email entered or contact with such email already exists",
+        if(contact.getEmails()==null ||
+                emailsAreInvalid(getUnique(oldContactData.getEmails(), contact.getEmails()), principal.getName())){
+                return new ResponseEntity<>(
+                        "Invalid email entered or contact with such email already exists",
                     HttpStatus.BAD_REQUEST);
-        }
-        else if(contact.getPhones()==null || phoneNumbersAreInvalid(
+
+        } else if(contact.getPhones()==null || phoneNumbersAreInvalid(
                 getUnique(oldContactData.getPhones(), contact.getPhones()), principal.getName())){
-            return new ResponseEntity<>("Invalid phoneNumber entered or contact with such phoneNumber already exists",
+                return new ResponseEntity<>(
+                        "Invalid phoneNumber entered or contact with such phoneNumber already exists",
                     HttpStatus.BAD_REQUEST);
         }
         oldContactData.setEmails(contact.getEmails());
