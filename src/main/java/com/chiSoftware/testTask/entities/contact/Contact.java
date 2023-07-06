@@ -20,6 +20,9 @@ import lombok.NoArgsConstructor;
     private String[] phones;
     @ElementCollection
     private String[] emails;
+    @Lob
+    @Column(columnDefinition = "mediumblob")
+    private byte[] image;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.security.Principal;
@@ -49,7 +50,8 @@ public class ContactServiceTests {
         Contact contact = new Contact();
         ResponseEntity<String> expected = new ResponseEntity<>("Contact name cannot be empty",
                 HttpStatus.BAD_REQUEST);
-        ResponseEntity<String> actual = contactService.createContact(contact, principal);
+        ResponseEntity<String> actual = contactService.createContact( contact,
+                null,  principal);
         assertEquals(expected, actual);
 
         contact.setName("test");
@@ -58,27 +60,27 @@ public class ContactServiceTests {
         );
         expected = new ResponseEntity<>("Contact with such name already exists",
                 HttpStatus.BAD_REQUEST);
-        actual = contactService.createContact(contact, principal);
+        actual = contactService.createContact(contact, null,  principal);
         assertEquals(expected, actual);
 
         contact.setName("test2");
         expected = new ResponseEntity<>("Invalid email entered or contact with such email already exists",
                 HttpStatus.BAD_REQUEST);
-        actual = contactService.createContact(contact, principal);
+        actual = contactService.createContact(contact, null,  principal);
         assertEquals(expected, actual);
 
         contact.setEmails(new String[0]);
         expected = new ResponseEntity<>(
                 "Invalid phoneNumber entered or contact with such phoneNumber already exists",
                 HttpStatus.BAD_REQUEST);
-        actual = contactService.createContact(contact, principal);
+        actual = contactService.createContact(contact, null, principal);
         assertEquals(expected, actual);
 
         contact.setPhones(new String[0]);
         expected = new ResponseEntity<>(
                 "Owner of this token does not exist",
                 HttpStatus.UNAUTHORIZED);
-        actual = contactService.createContact(contact, principal);
+        actual = contactService.createContact(contact, null,  principal);
         assertEquals(expected, actual);
     }
 
@@ -91,10 +93,23 @@ public class ContactServiceTests {
                 Optional.of(new User("test", "test"))
         );
 
-        ResponseEntity<String> expected = new ResponseEntity<>("Contact was successfully created",
+        ResponseEntity<String> expected = new ResponseEntity<>(
+                "Contact was successfully created. Image was not added",
                 headers,
                 HttpStatus.CREATED);
-        ResponseEntity<String> actual = contactService.createContact(contact, principal);
+        ResponseEntity<String> actual = contactService.createContact(contact,
+                null, principal);
+        assertEquals(expected, actual);
+
+        byte[] imageBytes = {0x00, 0x01, 0x02};
+        MockMultipartFile image = new MockMultipartFile("image", "text.jpg",
+                "image/jpeg", imageBytes);
+        expected = new ResponseEntity<>(
+                "Contact was successfully created. Image was added",
+                headers,
+                HttpStatus.CREATED);
+        actual = contactService.createContact(contact,
+                image, principal);
         assertEquals(expected, actual);
     }
 
@@ -148,17 +163,17 @@ public class ContactServiceTests {
         Contact contact = new Contact();
         ResponseEntity<String> expected = new ResponseEntity<>("Name variable cannot be empty",
                 HttpStatus.BAD_REQUEST);
-        ResponseEntity<String> actual = contactService.editContact("", contact, principal);
+        ResponseEntity<String> actual = contactService.editContact("", contact, null, principal);
         assertEquals(expected, actual);
 
         contact.setId(1L);
         expected = new ResponseEntity<>("Contact id cannot be changed", HttpStatus.BAD_REQUEST);
-        actual = contactService.editContact("test", contact, principal);
+        actual = contactService.editContact("test", contact, null, principal);
         assertEquals(expected, actual);
 
         contact.setId(null);
         expected = new ResponseEntity<>("Contact name cannot be empty", HttpStatus.BAD_REQUEST);
-        actual = contactService.editContact("test", contact, principal);
+        actual = contactService.editContact("test", contact, null, principal);
         assertEquals(expected, actual);
 
         when(contactRepository.findContactByName(eq("test"), any(String.class))).thenReturn(
@@ -166,13 +181,13 @@ public class ContactServiceTests {
         );
         contact.setName("test");
         expected = new ResponseEntity<>("Contact with such name already exists", HttpStatus.BAD_REQUEST);
-        actual = contactService.editContact("test2", contact, principal);
+        actual = contactService.editContact("test2", contact, null,  principal);
         assertEquals(expected, actual);
 
         contact.setEmails(new String[]{"test", "test"});
         expected = new ResponseEntity<>("Invalid email entered or contact with such email already exists",
                 HttpStatus.BAD_REQUEST);
-        actual = contactService.editContact("test", contact, principal);
+        actual = contactService.editContact("test", contact, null, principal);
         assertEquals(expected, actual);
 
         contact.setEmails(new String[]{"test@gmail.com", "test@yahoo.com"});
@@ -180,7 +195,7 @@ public class ContactServiceTests {
         expected = new ResponseEntity<>(
                 "Invalid phoneNumber entered or contact with such phoneNumber already exists",
                 HttpStatus.BAD_REQUEST);
-        actual = contactService.editContact("test", contact, principal);
+        actual = contactService.editContact("test", contact, null, principal);
         assertEquals(expected, actual);
     }
 
@@ -191,9 +206,10 @@ public class ContactServiceTests {
         when(contactRepository.findContactByName(eq("test"), any(String.class))).thenReturn(
                 Optional.of(new Contact())
         );
-        ResponseEntity<String> expected = new ResponseEntity<>("Contact updated successfully",
+        ResponseEntity<String> expected = new ResponseEntity<>(
+                "Contact updated successfully. Image was not updated",
                 HttpStatus.OK);
-        ResponseEntity<String> actual = contactService.editContact("test", contact, principal);
+        ResponseEntity<String> actual = contactService.editContact("test", contact, null, principal);
         assertEquals(expected, actual);
     }
 }

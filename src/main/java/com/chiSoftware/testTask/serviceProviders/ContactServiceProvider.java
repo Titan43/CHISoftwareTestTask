@@ -11,8 +11,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.*;
@@ -82,7 +84,7 @@ public class ContactServiceProvider implements ContactService {
 
 
     @Override
-    public ResponseEntity<String> createContact(Contact contact, Principal principal) {
+    public ResponseEntity<String> createContact(Contact contact, MultipartFile image, Principal principal) {
         if(contact.getName() == null || contact.getName().strip().equals("")){
             return new ResponseEntity<>("Contact name cannot be empty", HttpStatus.BAD_REQUEST);
         }
@@ -102,6 +104,17 @@ public class ContactServiceProvider implements ContactService {
         if(optionalUser.isEmpty()){
             return new ResponseEntity<>("Owner of this token does not exist", HttpStatus.UNAUTHORIZED);
         }
+        boolean imageWasAdded = true;
+        if(image != null && !image.isEmpty()) {
+            try {
+                byte[] bytes = image.getBytes();
+                contact.setImage(bytes);
+            } catch (IOException e) {
+                imageWasAdded = false;
+            }
+        }else{
+            imageWasAdded = false;
+        }
         contact.setUser(optionalUser.get());
         contactRepository.save(contact);
         URI location = ServletUriComponentsBuilder
@@ -111,7 +124,9 @@ public class ContactServiceProvider implements ContactService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(location);
-        return new ResponseEntity<>("Contact was successfully created", headers, HttpStatus.CREATED);
+        return new ResponseEntity<>("Contact was successfully created. "+
+                (imageWasAdded? "Image was added": "Image was not added"),
+                headers, HttpStatus.CREATED);
     }
 
     @Override
@@ -137,7 +152,8 @@ public class ContactServiceProvider implements ContactService {
     }
 
     @Override
-    public ResponseEntity<String> editContact(String name, Contact contact, Principal principal) {
+    public ResponseEntity<String> editContact(String name, Contact contact, MultipartFile image,
+                                              Principal principal) {
         if(name == null || name.strip().equals("")){
             return new ResponseEntity<>("Name variable cannot be empty",
                     HttpStatus.BAD_REQUEST);
@@ -171,12 +187,24 @@ public class ContactServiceProvider implements ContactService {
                         "Invalid phoneNumber entered or contact with such phoneNumber already exists",
                     HttpStatus.BAD_REQUEST);
         }
+        boolean imageWasAdded = true;
+        if(image != null && !image.isEmpty()) {
+            try {
+                byte[] bytes = image.getBytes();
+                contact.setImage(bytes);
+            } catch (IOException e) {
+                imageWasAdded = false;
+            }
+        }else{
+            imageWasAdded = false;
+        }
         oldContactData.setEmails(contact.getEmails());
         oldContactData.setPhones(contact.getPhones());
         oldContactData.setName(contact.getName());
 
         contactRepository.save(oldContactData);
 
-        return new ResponseEntity<>("Contact updated successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Contact updated successfully. "+
+                (imageWasAdded? "Image was updated": "Image was not updated"), HttpStatus.OK);
     }
 }
