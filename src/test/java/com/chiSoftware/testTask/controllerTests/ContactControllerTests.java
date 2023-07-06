@@ -40,7 +40,7 @@ public class ContactControllerTests {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    @WithMockUser(username = "andy")
+    @WithMockUser(username = "test")
     void testCreateContact() throws Exception{
         when(contactService.createContact(any(Contact.class), any(Principal.class)))
                 .thenReturn(ResponseEntity.ok().build());
@@ -56,7 +56,7 @@ public class ContactControllerTests {
     }
 
     @Test
-    @WithMockUser(username = "andy")
+    @WithMockUser(username = "test")
     void testGetContacts() throws Exception{
         List<Contact> contacts = Arrays.asList(
                 new Contact(), new Contact()
@@ -69,5 +69,32 @@ public class ContactControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(objectMapper
                         .writeValueAsString(contacts)));
+    }
+
+    @Test
+    @WithMockUser(username = "test")
+    void testDeleteContact() throws Exception{
+        when(contactService.deleteContact(any(String.class), any(Principal.class)))
+                .thenReturn(new ResponseEntity<>("Contact deleted successfully", HttpStatus.NO_CONTENT));
+        mockMvc.perform(MockMvcRequestBuilders.delete("/contacts/"+"test")
+                        .header("Authorization", "Bearer ")
+                )
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andExpect(MockMvcResultMatchers.content().string("Contact deleted successfully"));
+    }
+
+    @Test
+    @WithMockUser(username = "test")
+    void testEditContact() throws Exception{
+        when(contactService.editContact(any(String.class), any(Contact.class),
+                any(Principal.class)))
+                .thenReturn(new ResponseEntity<>("Contact updated successfully", HttpStatus.OK));
+        mockMvc.perform(MockMvcRequestBuilders.put("/contacts/"+"test")
+                        .header("Authorization", "Bearer ")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new Contact()))
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Contact updated successfully"));
     }
 }
