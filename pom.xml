@@ -12,6 +12,7 @@
 	<artifactId>testTask</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>testTask</name>
+	<packaging>jar</packaging>
 	<description>Test task for CHI Software</description>
 	<properties>
 		<java.version>17</java.version>
@@ -85,6 +86,7 @@
     </dependencies>
 
 	<build>
+		<finalName>CHISoftwareTestTask</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
