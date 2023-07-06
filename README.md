@@ -69,4 +69,7 @@ docker run -v <path to folder with application.properties>:/app/config -p 8080:8
 - emails(1:n)
 - image
 - user(n:1)
-  
+
+## Swagger
+
+For more info on API and its endpoints you can checkout ```swagger.yaml```
