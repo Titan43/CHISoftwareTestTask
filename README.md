@@ -5,7 +5,7 @@ This is a small contact book backend application built with Spring Boot and Mari
 ### Github
 Clone the repository:
 ```bash
-git clone https://github.com/Titan43/InForceTestTask.git
+git clone https://github.com/Titan43/CHISoftwareTestTask.git
 ```
 Configure the MariaDB connection:
 
