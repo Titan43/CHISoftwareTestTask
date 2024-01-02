@@ -1,4 +1,4 @@
-# CHISoftwareTestTask
+# ContactBookAPI
 
 This is a small contact book backend application built with Spring Boot and MariaDB.
 ## Getting Started
